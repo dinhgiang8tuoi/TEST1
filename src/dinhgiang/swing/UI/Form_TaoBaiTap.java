@@ -416,6 +416,8 @@ public class Form_TaoBaiTap extends javax.swing.JFrame {
 
     private void btnluuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnluuActionPerformed
 //      TODO add your handling code here:
+// THêm test1
+        System.out.println("CCC");
         String TENBT = tftenbaitap.getText();
         String MALOP = cbmalop.getSelectedItem().toString();
         double SODIEM = Double.parseDouble(tfsodiem.getText());
