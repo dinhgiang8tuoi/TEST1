@@ -418,6 +418,7 @@ public class Form_TaoBaiTap extends javax.swing.JFrame {
 //      TODO add your handling code here:
 // THêm test1
         System.out.println("CCC");
+        System.out.println("HHHH");
         String TENBT = tftenbaitap.getText();
         String MALOP = cbmalop.getSelectedItem().toString();
         double SODIEM = Double.parseDouble(tfsodiem.getText());
