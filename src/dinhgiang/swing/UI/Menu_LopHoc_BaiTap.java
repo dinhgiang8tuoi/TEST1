@@ -31,12 +31,16 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
     Connection conn = null;
     String IMGPATH = "";
     int FLAG = 1; //0: XemSUA || 1: Default
+    String TAIKHOAN = "";
+    String MABT1 = "";
+    String MALOP1 = "";
 
     /**
      * Creates new form LopHoc
      */
-    public Menu_LopHoc_BaiTap() {
+    public Menu_LopHoc_BaiTap(String TAIKHOAN) {
         initComponents();
+        this.TAIKHOAN = TAIKHOAN;
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         BasicInternalFrameUI ui = (BasicInternalFrameUI)this.getUI();
         ui.setNorthPane(null);
@@ -160,7 +164,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
         jLabel1 = new javax.swing.JLabel();
         cblop = new javax.swing.JComboBox<>();
         btnthemcauhoi = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
+        btnlamthu = new javax.swing.JButton();
         btnback = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
 
@@ -199,6 +203,11 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(table);
@@ -246,8 +255,13 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton10.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
-        jButton10.setText("Làm thử");
+        btnlamthu.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
+        btnlamthu.setText("Làm thử");
+        btnlamthu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnlamthuActionPerformed(evt);
+            }
+        });
 
         btnback.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
         btnback.setText("Back");
@@ -280,7 +294,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
                             .addComponent(btnxem, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(35, 35, 35)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton10)
+                            .addComponent(btnlamthu)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(26, 26, 26)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -307,7 +321,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
                         .addComponent(btnxoa)
                         .addComponent(btnsua)
                         .addComponent(btnthemcauhoi)
-                        .addComponent(jButton10)
+                        .addComponent(btnlamthu)
                         .addComponent(btnback))
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addGap(18, 18, 18)
@@ -539,16 +553,33 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
         load_db();
     }//GEN-LAST:event_btnbackActionPerformed
 
+    private void btnlamthuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnlamthuActionPerformed
+        // TODO add your handling code here:
+        Multiple_Choices lamthu = new Multiple_Choices(TAIKHOAN, MABT1, MALOP1);
+        lamthu.setVisible(true);
+      
+    }//GEN-LAST:event_btnlamthuActionPerformed
+
+    private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = table.getSelectedRow();
+         if (selectedRow >= 0) {
+            MABT1 = table.getValueAt(selectedRow, 1).toString();
+            MALOP1 = table.getValueAt(selectedRow, 5).toString();
+        }
+        
+    }//GEN-LAST:event_tableMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnback;
+    private javax.swing.JButton btnlamthu;
     private javax.swing.JButton btnsua;
     private javax.swing.JButton btntaobt;
     private javax.swing.JButton btnthemcauhoi;
     private javax.swing.JButton btnxem;
     private javax.swing.JButton btnxoa;
     private javax.swing.JComboBox<String> cblop;
-    private javax.swing.JButton jButton10;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;

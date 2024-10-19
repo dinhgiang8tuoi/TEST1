@@ -404,7 +404,7 @@ public class Form_ThemCauHoi extends javax.swing.JFrame {
         try {
             conn = cn.gConnection();
             Statement stm = conn.createStatement();
-            String query1 = "INSERT INTO CAUHOI (QTEXT, MABT, Q1, Q2, Q3, Q4, IS_CORRECT) VALUES ('"+QTEXT+"', '"+MABT+"', '"+A1+"', '"+A2+"', '"+A3+"', '"+A4+"', '"+IS_CORRECT+"')";
+            String query1 = "INSERT INTO CAUHOI (QTEXT, MABT, A1, A2, A3, A4, IS_CORRECT, MALOP) VALUES ('"+QTEXT+"', '"+MABT+"', '"+A1+"', '"+A2+"', '"+A3+"', '"+A4+"', '"+IS_CORRECT+"', '"+MALOP+"')";
             int rowInserted = stm.executeUpdate(query1);
             if (rowInserted > 0) {
                 JOptionPane.showMessageDialog(this, "Thêm thành công");
