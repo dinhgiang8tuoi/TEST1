@@ -23,6 +23,7 @@ public class TrangChu extends javax.swing.JFrame {
     int ROLE = 0; // 0: Giáo viên // 1: Học sinh
     ConnectDB cn = new ConnectDB();
     Connection conn = null;
+    String TAIKHOAN = "";
     
     
     Color DefaultColor, ClickedColor, DefaultColor1;
@@ -54,6 +55,7 @@ public class TrangChu extends javax.swing.JFrame {
     }
     public TrangChu(String TAIKHOAN) {
         initComponents();
+        this.TAIKHOAN = TAIKHOAN;
         
         DefaultColor = new Color(255,255,255);
         DefaultColor1 = new Color(0,0,0);
@@ -481,7 +483,7 @@ public class TrangChu extends javax.swing.JFrame {
 
     private void btnbaitapMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnbaitapMouseClicked
         // TODO add your handling code here:
-        Menu_LopHoc_BaiTap BAITAP = new Menu_LopHoc_BaiTap();
+        Menu_LopHoc_BaiTap BAITAP = new Menu_LopHoc_BaiTap(TAIKHOAN);
         jDesktopPane1.removeAll();
         jDesktopPane1.add(BAITAP).setVisible(true);
     }//GEN-LAST:event_btnbaitapMouseClicked

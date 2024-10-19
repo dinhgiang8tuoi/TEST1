@@ -116,8 +116,8 @@ public class Form_TaoBaiTap extends javax.swing.JFrame {
         btnluu.setEnabled(false);
         btnclear.setEnabled(true);
         lbheading.setText("TẠO BÀI TẬP");
-        lbsodiem.setVisible(false);
-        tfsodiem.setVisible(false);
+        lbsodiem.setVisible(true);
+        tfsodiem.setVisible(true);
     }
    
     /**
@@ -373,6 +373,7 @@ public class Form_TaoBaiTap extends javax.swing.JFrame {
           String MABT = tfmabt.getText();
           String TENBT = tftenbaitap.getText();
           String MALOP = cbmalop.getSelectedItem().toString();
+          Double SODIEM = Double.parseDouble(tfsodiem.getText());
           
 
         try {
@@ -385,7 +386,7 @@ public class Form_TaoBaiTap extends javax.swing.JFrame {
                 return;
             }
  
-            String query = "INSERT INTO BAITAP (ANH, MABT, TENBT, MALOP) VALUES ('"+IMGPATH+"', '"+MABT+"', '"+TENBT+"', '"+MALOP+"')";
+            String query = "INSERT INTO BAITAP (ANH, MABT, TENBT,SODIEM, MALOP) VALUES ('"+IMGPATH+"', '"+MABT+"', '"+TENBT+"','"+SODIEM+"' ,'"+MALOP+"')";
             int rowInserted = stm.executeUpdate(query);
             if (rowInserted > 0) {
                 JOptionPane.showMessageDialog(this, "Thêm thành công");
