@@ -131,8 +131,9 @@ public final class Multiple_Choices extends javax.swing.JFrame {
     }
     
     // Hàm tính điểm
-    public void tinhDiem() {
-        Double tongDiemCuaBaiKiemTra = 0.0;
+    public double tinhDiem() {
+        double tongDiemCuaBaiKiemTra = 0.0;
+        double BANGDIEM = 0.0;
         try {
             conn = cn.gConnection();
             String query = "SELECT SODIEM FROM BAITAP WHERE MABT = '"+MABT+"'";
@@ -142,9 +143,9 @@ public final class Multiple_Choices extends javax.swing.JFrame {
                 tongDiemCuaBaiKiemTra = rs.getDouble("SODIEM");
             }
             
-            Double diemCuaMoiCauHoi = 0.0;
+            double diemCuaMoiCauHoi = 0.0;
             diemCuaMoiCauHoi = tongDiemCuaBaiKiemTra / soLuongCauHoi;
-            Double BANGDIEM = soDapAnDung*diemCuaMoiCauHoi;
+            BANGDIEM = soDapAnDung*diemCuaMoiCauHoi;
             
             try {
                 conn = cn.gConnection();
@@ -156,6 +157,7 @@ public final class Multiple_Choices extends javax.swing.JFrame {
             }
         } catch (Exception e) {
         }
+        return BANGDIEM;
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -222,6 +224,11 @@ public final class Multiple_Choices extends javax.swing.JFrame {
         btnnopbai0.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
         btnnopbai0.setForeground(new java.awt.Color(102, 102, 0));
         btnnopbai0.setText("Nộp bài");
+        btnnopbai0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnnopbai0ActionPerformed(evt);
+            }
+        });
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -424,11 +431,12 @@ public final class Multiple_Choices extends javax.swing.JFrame {
                     .addComponent(btnnopbai0)
                     .addComponent(tfmabt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel5)
-                    .addComponent(tfsoluongcauhoi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labeldangocauthu))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(tfsoluongcauhoi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(labeldangocauthu)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -531,6 +539,11 @@ public final class Multiple_Choices extends javax.swing.JFrame {
             btnnopbai1.setEnabled(false);
         }
     }//GEN-LAST:event_check1ActionPerformed
+
+    private void btnnopbai0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnnopbai0ActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "Bạn đã hoàn thành bài thi!. Số điểm của bạn là: " +tinhDiem());
+    }//GEN-LAST:event_btnnopbai0ActionPerformed
 
     /**
      * @param args the command line arguments
