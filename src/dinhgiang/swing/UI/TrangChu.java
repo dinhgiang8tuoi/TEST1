@@ -225,6 +225,11 @@ public class TrangChu extends javax.swing.JFrame {
 
         btnbangdiem.setFont(new java.awt.Font("Helvetica Neue", 0, 16)); // NOI18N
         btnbangdiem.setFocusable(false);
+        btnbangdiem.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnbangdiemMouseClicked(evt);
+            }
+        });
         btnbangdiem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnbangdiemActionPerformed(evt);
@@ -488,9 +493,13 @@ public class TrangChu extends javax.swing.JFrame {
         jDesktopPane1.add(BAITAP).setVisible(true);
     }//GEN-LAST:event_btnbaitapMouseClicked
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btnbangdiemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnbangdiemMouseClicked
+        // TODO add your handling code here:
+        Menu_LopHoc_BangDiem BANGDIEM = new Menu_LopHoc_BangDiem();
+        jDesktopPane1.removeAll();
+        jDesktopPane1.add(BANGDIEM).setVisible(true);
+    }//GEN-LAST:event_btnbangdiemMouseClicked
+
     
     public static void main(String args[]) {
         try {

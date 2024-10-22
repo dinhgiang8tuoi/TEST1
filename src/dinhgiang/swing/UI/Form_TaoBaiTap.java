@@ -427,7 +427,7 @@ public class Form_TaoBaiTap extends javax.swing.JFrame {
             conn = cn.gConnection();
             Statement stm = conn.createStatement();
         
-            String query = "UPDATE BAITAP SET ANH = '"+IMGPATH+"', MABT = '"+MABT+"', TENBT = '"+TENBT+"', SODIEM = '"+SODIEM+"', MALOP = '"+MALOP+"'";
+            String query = "UPDATE BAITAP SET ANH = '"+IMGPATH+"', TENBT = '"+TENBT+"', SODIEM = '"+SODIEM+"', MALOP = '"+MALOP+"' WHERE MABT='"+MABT+"'";
             int rowInserted = stm.executeUpdate(query);
             if (rowInserted > 0) {
                 JOptionPane.showMessageDialog(this, "Sửa thành công");
