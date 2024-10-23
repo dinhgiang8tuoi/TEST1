@@ -24,6 +24,8 @@ public class TrangChu extends javax.swing.JFrame {
     ConnectDB cn = new ConnectDB();
     Connection conn = null;
     String TAIKHOAN = "";
+    String sROLE = "";
+    String MALOP = "";
     
     
     Color DefaultColor, ClickedColor, DefaultColor1;
@@ -86,12 +88,15 @@ public class TrangChu extends javax.swing.JFrame {
             
             while(rs.next()) {
                 String HOTEN = rs.getString("HOTEN");
-                String ROLE = rs.getString("ROLE");
+                sROLE = rs.getString("ROLE");
+                MALOP = rs.getString("MALOP");
     
                 lbName.setText(HOTEN);
-                if (ROLE.equals("Tôi là giáo viên")) {
+                if (sROLE.equals("Tôi là giáo viên")) {
                     lbsubName.setText("Giáo viên");
-                } else lbsubName.setText("Học sinh");
+                } else {
+                    lbsubName.setText("Học sinh");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -427,24 +432,33 @@ public class TrangChu extends javax.swing.JFrame {
 
     private void btnlophocMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnlophocMouseClicked
         // TODO add your handling code here:
-        Menu_LopHoc lophoc = new Menu_LopHoc();
-        jDesktopPane1.removeAll();
-        jDesktopPane1.add(lophoc).setVisible(true);
-        FLAG = 1;
-        if (FLAG == 1) {
-            btnthanhvien.setText("Thành Viên");
+        if (sROLE.equals("Tôi là giáo viên")) {
+            Menu_LopHoc lophoc = new Menu_LopHoc();
+            jDesktopPane1.removeAll();
+            jDesktopPane1.add(lophoc).setVisible(true);
+            FLAG = 1;
+            if (FLAG == 1) {
+                btnthanhvien.setText("Thành Viên");
+                btnbaitap.setText("Bài Tập");
+                btnbangdiem.setText("Bảng Điểm");
+                btnthanhvien.setEnabled(true);
+                btnbaitap.setEnabled(true);
+                btnbangdiem.setEnabled(true);
+            }
+            if (FLAG == 0) {
+                btnthanhvien.setEnabled(true);
+                btnbaitap.setEnabled(true);
+                btnbangdiem.setEnabled(true);
+            }
+        } else {
+            Menu_HocSinh hocsinh = new Menu_HocSinh(MALOP);
+            jDesktopPane1.removeAll();
+            jDesktopPane1.add(hocsinh).setVisible(true);         
             btnbaitap.setText("Bài Tập");
             btnbangdiem.setText("Bảng Điểm");
-            btnthanhvien.setEnabled(true);
             btnbaitap.setEnabled(true);
             btnbangdiem.setEnabled(true);
-        }
-        if (FLAG == 0) {
-            btnthanhvien.setEnabled(false);
-            btnbaitap.setEnabled(false);
-            btnbangdiem.setEnabled(false);
-        }
-        
+        }               
     }//GEN-LAST:event_btnlophocMouseClicked
 
     private void btnbangdiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbangdiemActionPerformed
@@ -488,9 +502,16 @@ public class TrangChu extends javax.swing.JFrame {
 
     private void btnbaitapMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnbaitapMouseClicked
         // TODO add your handling code here:
-        Menu_LopHoc_BaiTap BAITAP = new Menu_LopHoc_BaiTap(TAIKHOAN);
-        jDesktopPane1.removeAll();
-        jDesktopPane1.add(BAITAP).setVisible(true);
+        if (sROLE.equals("Tôi là giáo viên")) {
+            Menu_LopHoc_BaiTap BAITAP = new Menu_LopHoc_BaiTap(TAIKHOAN);
+            jDesktopPane1.removeAll();
+            jDesktopPane1.add(BAITAP).setVisible(true);
+        } else {
+            Menu_HocSinh_BaiTap menu_HocSinh_BaiTap = new Menu_HocSinh_BaiTap(TAIKHOAN);
+            jDesktopPane1.removeAll();
+            jDesktopPane1.add(menu_HocSinh_BaiTap).setVisible(true);
+        }
+        
     }//GEN-LAST:event_btnbaitapMouseClicked
 
     private void btnbangdiemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnbangdiemMouseClicked
