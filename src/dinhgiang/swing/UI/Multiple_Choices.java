@@ -145,6 +145,7 @@ public final class Multiple_Choices extends javax.swing.JFrame {
             
             double diemCuaMoiCauHoi = 0.0;
             diemCuaMoiCauHoi = tongDiemCuaBaiKiemTra / soLuongCauHoi;
+            System.out.println(soDapAnDung);
             BANGDIEM = soDapAnDung*diemCuaMoiCauHoi;
             
             try {
@@ -543,6 +544,7 @@ public final class Multiple_Choices extends javax.swing.JFrame {
     private void btnnopbai0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnnopbai0ActionPerformed
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(this, "Bạn đã hoàn thành bài thi!. Số điểm của bạn là: " +tinhDiem());
+        this.dispose();
     }//GEN-LAST:event_btnnopbai0ActionPerformed
 
     /**

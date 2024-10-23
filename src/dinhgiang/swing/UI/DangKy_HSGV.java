@@ -367,7 +367,7 @@ public class DangKy_HSGV extends javax.swing.JFrame {
             if (ROLE.equals("Tôi là giáo viên")) {
                 LOP = "";
             }
-            String queryMain = "INSERT INTO TAIKHOAN(HOTEN, TRUONG, NGAYSINH, TINH, TAIKHOAN, MATKHAU, LOP, ROLE) VALUES ('"+HOTEN+"', '"+TRUONG+"', '"+NGAYSINH+"', '"+TINH+"', '"+TAIKHOAN+"', '"+MATKHAU+"', '"+LOP+"', '"+ROLE+"')";
+            String queryMain = "INSERT INTO TAIKHOAN(HOTEN, TRUONG, NGAYSINH, TINH, TAIKHOAN, MATKHAU, MALOP, ROLE) VALUES ('"+HOTEN+"', '"+TRUONG+"', '"+NGAYSINH+"', '"+TINH+"', '"+TAIKHOAN+"', '"+MATKHAU+"', '"+LOP+"', '"+ROLE+"')";
 //            String queryMainHS = "INSERT INTO TAIKHOAN(HOTEN, TRUONG, NGAYSINH, TINH, TAIKHOAN, MATKHAU, LOP) VALUES ('"+HOTEN+"', '"+TRUONG+"', '"+NGAYSINH+"', '"+TINH+"', '"+TAIKHOAN+"', '"+MATKHAU+"', '"+LOP+"', '"+ROLE+"')";
             int check = stm.executeUpdate(queryMain);
             if (check > 0) {
