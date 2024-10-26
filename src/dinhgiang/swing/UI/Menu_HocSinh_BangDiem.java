@@ -126,7 +126,7 @@ public class Menu_HocSinh_BangDiem extends javax.swing.JInternalFrame {
 
         jPanel1 = new javax.swing.JPanel();
         tfsearch = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbsapxep = new javax.swing.JComboBox<>();
         btnthemhs = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
@@ -145,9 +145,19 @@ public class Menu_HocSinh_BangDiem extends javax.swing.JInternalFrame {
         tfsearch.setToolTipText("");
         tfsearch.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(153, 153, 153), 1, true));
         tfsearch.setFocusTraversalKeysEnabled(false);
+        tfsearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tfsearchKeyReleased(evt);
+            }
+        });
 
-        jComboBox1.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sắp Xếp", "Tăng dần", "Giảm dần" }));
+        cbsapxep.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
+        cbsapxep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sắp xếp", "Điểm tăng dần", "Điểm giảm dần" }));
+        cbsapxep.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbsapxepItemStateChanged(evt);
+            }
+        });
 
         btnthemhs.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
         btnthemhs.setText("Thêm học sinh");
@@ -227,7 +237,7 @@ public class Menu_HocSinh_BangDiem extends javax.swing.JInternalFrame {
                         .addGap(35, 35, 35)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cbsapxep, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(26, 26, 26)
                                 .addComponent(btnthemhs, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -243,7 +253,7 @@ public class Menu_HocSinh_BangDiem extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(tfsearch, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cbsapxep, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnthemhs, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(cblop, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -406,14 +416,138 @@ public class Menu_HocSinh_BangDiem extends javax.swing.JInternalFrame {
 //        }
     }//GEN-LAST:event_btnxoaActionPerformed
 
+    private void tfsearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfsearchKeyReleased
+        // TODO add your handling code here:
+        String searchKey = tfsearch.getText().trim();
+        String MALOP2 = cblop.getSelectedItem().toString();  // Lấy mã lớp từ ComboBox
+
+        if (searchKey.isEmpty()) {
+            load_db();  // Nếu không có từ khóa tìm kiếm, tải lại dữ liệu mặc định
+            return;
+        }
+
+        try {
+            conn = cn.gConnection();
+            DefaultTableModel model = new DefaultTableModel(new String[]{"TÊN", "NGÀY SINH", "QUÊ QUÁN", "MÃ LỚP", "BẢNG ĐIỂM", "MÃ BÀI TẬP"}, 0) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;  // Không cho phép chỉnh sửa ô
+                }
+            };
+
+           // Kiểm tra nếu searchKey là số (để tìm kiếm theo điểm)
+            String query;
+            if (searchKey.matches("\\d+(\\.\\d+)?")) {  // Nếu searchKey là số (cả số nguyên và số thập phân)
+                query = "SELECT TAIKHOAN.HOTEN AS TÊN, TAIKHOAN.NGAYSINH, TAIKHOAN.TINH AS QUEQUAN, BANGDIEM.MALOP, BANGDIEM.BANGDIEM, BANGDIEM.MABT " +
+                        "FROM BANGDIEM " +
+                        "JOIN TAIKHOAN ON BANGDIEM.TAIKHOAN = TAIKHOAN.TAIKHOAN " +
+                        "WHERE BANGDIEM.BANGDIEM >= " + searchKey + " AND BANGDIEM.BANGDIEM <= " + searchKey + " + 0.001 AND BANGDIEM.MALOP = '"+MALOP2+"'";
+            } else {
+                // Nếu searchKey là chuỗi ký tự
+                query = "SELECT TAIKHOAN.HOTEN AS TÊN, TAIKHOAN.NGAYSINH, TAIKHOAN.TINH AS QUEQUAN, BANGDIEM.MALOP, BANGDIEM.BANGDIEM, BANGDIEM.MABT " +
+                        "FROM BANGDIEM " +
+                        "JOIN TAIKHOAN ON BANGDIEM.TAIKHOAN = TAIKHOAN.TAIKHOAN " +
+                        "WHERE (BANGDIEM.MABT LIKE '%" + searchKey + "%' OR TAIKHOAN.HOTEN LIKE '%" + searchKey + "%' OR TAIKHOAN.TINH LIKE '%" + searchKey + "%') " +
+                        "AND BANGDIEM.MALOP = '" + MALOP2 + "'";
+            }
+
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery(query);
+
+            // Duyệt qua kết quả trả về
+            while (rs.next()) {
+                String TEN = rs.getString("TÊN");            
+                String NGAYSINH = rs.getString("NGAYSINH");
+                String QUEQUAN = rs.getString("QUEQUAN");
+                String MALOP1 = rs.getString("MALOP");
+                double BANGDIEM = rs.getDouble("BANGDIEM");
+                String MABT = rs.getString("MABT");
+
+                // Thêm dữ liệu vào mô hình bảng
+                model.addRow(new Object[] {TEN, NGAYSINH, QUEQUAN, MALOP1, BANGDIEM, MABT});
+            }
+
+            // Cập nhật giao diện bảng
+            table.setRowHeight(35);  // Khoảng cách giữa các hàng
+            table.setModel(model);
+            table.setRowMargin(10);  // Khoảng cách giữa các hàng
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_tfsearchKeyReleased
+
+    private void sortData(String order) {
+    String MALOP = cblop.getSelectedItem().toString();
+    
+    try {
+        conn = cn.gConnection();
+        DefaultTableModel model = new DefaultTableModel(new String[]{"TÊN", "NGÀY SINH", "QUÊ QUÁN", "MÃ LỚP", "BẢNG ĐIỂM", "MÃ BÀI TẬP"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        // Câu truy vấn sắp xếp theo thứ tự order (ASC hoặc DESC)
+        String query = "SELECT * FROM BANGDIEM WHERE MALOP = '"+MALOP+"' ORDER BY BANGDIEM " + order;
+
+        Statement stm = conn.createStatement();
+        ResultSet rs = stm.executeQuery(query);
+
+        while (rs.next()) {
+            String TAIKHOAN = rs.getString("TAIKHOAN");                 
+            double BANGDIEM = Double.parseDouble(rs.getString("BANGDIEM"));
+            String MABT = rs.getString("MABT");         
+            
+            // Truy vấn bảng TAIKHOAN để lấy thông tin cá nhân của từng tài khoản từ BANGDIEM
+            String query2 = "SELECT * FROM TAIKHOAN WHERE TAIKHOAN = '"+TAIKHOAN+"' AND MALOP = '"+MALOP+"'";
+            Statement stm2 = conn.createStatement();  // Tạo một Statement khác để thực hiện query thứ hai
+            ResultSet rs2 = stm2.executeQuery(query2);
+
+          while(rs2.next()) {
+                String TEN = rs2.getString("HOTEN");
+                String NGAYSINH = rs2.getString("NGAYSINH");
+                String QUEQUAN = rs2.getString("TINH");
+
+                // Thêm dữ liệu vào bảng
+                model.addRow(new Object[] {TEN, NGAYSINH, QUEQUAN, MALOP, BANGDIEM, MABT});
+            }
+        }
+
+        table.setRowHeight(35);
+        table.setModel(model);
+        table.setRowMargin(10);      
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+    
+    private void cbsapxepItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbsapxepItemStateChanged
+        // TODO add your handling code here:
+         String selectedItem = cbsapxep.getSelectedItem().toString();
+        
+        if (selectedItem.equals("Điểm tăng dần")) {
+            // Sắp xếp tăng dần theo tên
+            sortData("ASC");
+        } else if (selectedItem.equals("Điểm giảm dần")) {
+            // Sắp xếp giảm dần theo tên
+            sortData("DESC");
+        } else if (selectedItem.equals("Sắp xếp")) {
+            // Hiển thị lại dữ liệu gốc
+            load_db();
+        }    
+    }//GEN-LAST:event_cbsapxepItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnsua;
     private javax.swing.JButton btnthemhs;
     private javax.swing.JButton btnxoa;
     private javax.swing.JComboBox<String> cblop;
+    private javax.swing.JComboBox<String> cbsapxep;
     private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

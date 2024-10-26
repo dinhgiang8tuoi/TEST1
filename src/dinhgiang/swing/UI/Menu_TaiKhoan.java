@@ -34,6 +34,7 @@ public class Menu_TaiKhoan extends javax.swing.JInternalFrame {
      */
     public Menu_TaiKhoan(String TAIKHOAN) {        
         initComponents();
+        btntaolophoc.setEnabled(false);
         this.TAIKHOAN = TAIKHOAN;
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         BasicInternalFrameUI ui = (BasicInternalFrameUI)this.getUI();
@@ -91,7 +92,6 @@ public class Menu_TaiKhoan extends javax.swing.JInternalFrame {
         btnxoa = new javax.swing.JButton();
         btnsua = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        lbName = new javax.swing.JLabel();
         btnthongtin = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
 
@@ -156,9 +156,6 @@ public class Menu_TaiKhoan extends javax.swing.JInternalFrame {
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 15)); // NOI18N
         jLabel1.setText("TÀI KHOẢN");
 
-        lbName.setFont(new java.awt.Font("Helvetica Neue", 1, 16)); // NOI18N
-        lbName.setText("Đinh Đức Giang");
-
         btnthongtin.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
         btnthongtin.setText("Thông tin");
         btnthongtin.addActionListener(new java.awt.event.ActionListener() {
@@ -179,9 +176,7 @@ public class Menu_TaiKhoan extends javax.swing.JInternalFrame {
                         .addComponent(jScrollPane1)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addGap(126, 126, 126)
-                                    .addComponent(jButton4))
+                                .addComponent(jButton4)
                                 .addComponent(tfsearch, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGap(35, 35, 35)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -195,11 +190,6 @@ public class Menu_TaiKhoan extends javax.swing.JInternalFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                     .addComponent(btnxoa))))))
                 .addContainerGap(106, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(lbName)
-                    .addGap(0, 0, Short.MAX_VALUE)))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -220,11 +210,6 @@ public class Menu_TaiKhoan extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(lbName)
-                    .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -274,78 +259,49 @@ public class Menu_TaiKhoan extends javax.swing.JInternalFrame {
 
     private void btnthongtinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnthongtinActionPerformed
         // TODO add your handling code here:
-//        int selectedRow = table.getSelectedRow();
-//        if (selectedRow == -1) {
-//            JOptionPane.showMessageDialog(this, "Vui lòng chọn một lớp học để xem!");
-//            return;
-//        }
-//        String MALOP = "";
-//        
-//        if (selectedRow >= 0) {
-//            MALOP = table.getValueAt(selectedRow, 1).toString();
-//        }
-//        Form_TaoLopHoc tlh = new Form_TaoLopHoc(0, MALOP, IMGPATH);
-//        tlh.setVisible(true);
+        ThongTin_TaiKhoan thongTin_TaiKhoan = new ThongTin_TaiKhoan(TAIKHOAN, 1);
+        thongTin_TaiKhoan.setVisible(true);
     }//GEN-LAST:event_btnthongtinActionPerformed
 
     private void btnsuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsuaActionPerformed
         // TODO add your handling code here:
-//        int selectedRow = table.getSelectedRow();
-//         if (selectedRow == -1) {
-//            JOptionPane.showMessageDialog(this, "Vui lòng chọn một lớp học để sửa!");
-//            return;
-//        }
-//        String MALOP = "";
-//        if (selectedRow >= 0) {
-//            MALOP = table.getValueAt(selectedRow, 1).toString();
-//        }
-//        
-//        Form_TaoLopHoc tlh = new Form_TaoLopHoc(1, MALOP, IMGPATH);
-//        
-//        // Lắng nghe sự kiện khi cửa sổ Form_TaoLopHoc đóng lại
-//        tlh.addWindowListener(new java.awt.event.WindowAdapter() {
-//            @Override
-//            public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-//                // Gọi hàm load_db() để load lại dữ liệu khi cửa sổ đóng
-//                load_db();
-//            }
-//        });
-//        tlh.setVisible(true);
+        ThongTin_TaiKhoan thongTin_TaiKhoan = new ThongTin_TaiKhoan(TAIKHOAN, 0);
+        thongTin_TaiKhoan.setVisible(true);
     }//GEN-LAST:event_btnsuaActionPerformed
 
     private void btnxoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnxoaActionPerformed
         // TODO add your handling code here:
-//        conn = cn.gConnection();
-//        
-//        try {
-//            int selectedRow = table.getSelectedRow();
-//            
-//            if (selectedRow == -1) {
-//                JOptionPane.showMessageDialog(this,"Vui lòng chọn một lớp để xóa!");
-//                return;
-//            }
-//            
-//            int confirm = JOptionPane.showConfirmDialog(this, "Bạn chắc chắn muốn xóa lớp này chứ?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-//            if (confirm == JOptionPane.NO_OPTION) {
-//            return;
-//            }
-//            
-//            String MALOP = table.getValueAt(selectedRow, 1).toString();
-//            String query = "DELETE FROM LOPHOC WHERE MALOP = '"+MALOP+"'";
-//            Statement statement = conn.createStatement();
-//            int rowDeleted = statement.executeUpdate(query);
-//            
-//            if (rowDeleted > 0) {
-//                JOptionPane.showMessageDialog(this, "Xóa thành công !");
-//                load_db();
-//            } else {
-//                JOptionPane.showMessageDialog(this, "Xóa thất bại");
-//            }
-//            if (conn != null) {
-//                conn.close();
-//            }
-//        } catch (Exception e) {
-//        }
+        conn = cn.gConnection();
+        
+        try {
+            int selectedRow = table.getSelectedRow();
+            
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this,"Vui lòng chọn một tài khoản để xóa!");
+                return;
+            }
+            
+            int confirm = JOptionPane.showConfirmDialog(this, "Bạn chắc chắn muốn xóa tài khoản này chứ?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.NO_OPTION) {
+            return;
+            }
+            
+            String TAIKHOAN1 = table.getValueAt(selectedRow, 0).toString();
+            String query = "DELETE FROM TAIKHOAN WHERE MALOP = '"+TAIKHOAN1+"'";
+            Statement statement = conn.createStatement();
+            int rowDeleted = statement.executeUpdate(query);
+            
+            if (rowDeleted > 0) {
+                JOptionPane.showMessageDialog(this, "Xóa thành công !");
+                load_db();
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa thất bại");
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnxoaActionPerformed
 
 
@@ -360,7 +316,6 @@ public class Menu_TaiKhoan extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel lbName;
     private javax.swing.JTable table;
     private javax.swing.JTextField tfsearch;
     // End of variables declaration//GEN-END:variables

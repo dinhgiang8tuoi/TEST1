@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import java.awt.image.*;
+import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -21,6 +22,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -40,6 +46,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
      */
     public Menu_LopHoc_BaiTap(String TAIKHOAN) {
         initComponents();
+        btnxuatfile.setEnabled(false);
         this.TAIKHOAN = TAIKHOAN;
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         BasicInternalFrameUI ui = (BasicInternalFrameUI)this.getUI();
@@ -168,6 +175,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
         btnthemcauhoi = new javax.swing.JButton();
         btnlamthu = new javax.swing.JButton();
         btnback = new javax.swing.JButton();
+        btnxuatfile = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(255, 255, 255));
@@ -185,7 +193,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
         });
 
         cbsapxep.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
-        cbsapxep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sắp Xếp", "Tăng dần theo tên", "Giảm dần theo tên" }));
+        cbsapxep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sắp xếp", "Tăng dần theo tên", "Giảm dần theo tên" }));
         cbsapxep.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbsapxepItemStateChanged(evt);
@@ -283,6 +291,14 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
             }
         });
 
+        btnxuatfile.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
+        btnxuatfile.setText("Xuất file");
+        btnxuatfile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnxuatfileActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -301,9 +317,12 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
                                 .addComponent(btnthemcauhoi, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE))
                             .addComponent(cblop, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(tfsearch, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnxem, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnxuatfile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnxem)))
                         .addGap(35, 35, 35)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnlamthu)
@@ -334,7 +353,8 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
                         .addComponent(btnsua)
                         .addComponent(btnthemcauhoi)
                         .addComponent(btnlamthu)
-                        .addComponent(btnback))
+                        .addComponent(btnback)
+                        .addComponent(btnxuatfile))
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -546,6 +566,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
     private void btnxemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnxemActionPerformed
         // TODO add your handling code here:
         FLAG = 0;
+        btnxuatfile.setEnabled(true);
         try {
             conn = cn.gConnection();
             int selectedRow = table.getSelectedRow();
@@ -562,6 +583,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
     private void btnbackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbackActionPerformed
         // TODO add your handling code here:
         FLAG = 1;
+        btnxuatfile.setEnabled(false);
         load_db();
     }//GEN-LAST:event_btnbackActionPerformed
 
@@ -687,6 +709,55 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
         }    
     }//GEN-LAST:event_cbsapxepItemStateChanged
 
+    private void btnxuatfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnxuatfileActionPerformed
+        // TODO add your handling code here:
+        // Tạo Workbook mới
+        String malop = cblop.getSelectedItem().toString();
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("CAUHOI" + malop);
+
+        // Lấy model của bảng
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+        // Tạo hàng đầu tiên (header)
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < model.getColumnCount(); i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(model.getColumnName(i));
+        }
+
+        // Thêm dữ liệu từ bảng vào Excel
+        for (int i = 0; i < model.getRowCount(); i++) {
+            Row row = sheet.createRow(i + 1); // Bắt đầu từ hàng 1, vì hàng 0 đã dành cho header
+            for (int j = 0; j < model.getColumnCount(); j++) {
+                Cell cell = row.createCell(j);
+                Object value = model.getValueAt(i, j);
+                if (value instanceof String) {
+                    cell.setCellValue((String) value);
+                } else if (value instanceof Integer) {
+                    cell.setCellValue((Integer) value);
+                } else if (value instanceof Double) {
+                    cell.setCellValue((Double) value);
+                }
+            }
+        }
+    
+        // Đặt đường dẫn cố định
+        String filePath = "/Users/dinhgiang1/Downloads/CAUHOI.xlsx";  // Đường dẫn cố định
+
+        // Chọn nơi lưu file Excel
+        try {
+            FileOutputStream fileOut = new FileOutputStream(filePath);
+            workbook.write(fileOut);
+            fileOut.close();
+            workbook.close();
+            JOptionPane.showMessageDialog(this, "Xuất file Excel thành công!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Xuất file Excel thất bại!");
+        }
+    }//GEN-LAST:event_btnxuatfileActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnback;
@@ -696,6 +767,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnthemcauhoi;
     private javax.swing.JButton btnxem;
     private javax.swing.JButton btnxoa;
+    private javax.swing.JButton btnxuatfile;
     private javax.swing.JComboBox<String> cblop;
     private javax.swing.JComboBox<String> cbsapxep;
     private javax.swing.JLabel jLabel1;
