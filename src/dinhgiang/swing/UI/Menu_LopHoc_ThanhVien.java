@@ -29,16 +29,28 @@ public class Menu_LopHoc_ThanhVien extends javax.swing.JInternalFrame {
     ConnectDB cn = new ConnectDB();
     Connection conn = null;
     String IMGPATH = "";
+    String HS = "";
+    String TAIKHOAN = "";
 
     /**
      * Creates new form LopHoc
      */
-    public Menu_LopHoc_ThanhVien() {
+    public Menu_LopHoc_ThanhVien(String HS, String TAIKHOAN) {
         initComponents();
+        this.HS = HS;
+        this.TAIKHOAN = TAIKHOAN;
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         BasicInternalFrameUI ui = (BasicInternalFrameUI)this.getUI();
         ui.setNorthPane(null);
-        load_dbcb();
+        //load_dbcb();
+        if (HS.equals("HS")) {
+            btnthemhs.setEnabled(false);
+            btnxoa.setEnabled(false);
+            btnsua.setEnabled(false);
+            load_dbcbhs();
+        } else {
+            load_dbcb();        
+        }
     }
     
     public void load_dbcb() {
@@ -57,42 +69,51 @@ public class Menu_LopHoc_ThanhVien extends javax.swing.JInternalFrame {
         } catch (Exception e) {
         }
     }
+    
+    public void load_dbcbhs() {
+        try {
+            conn = cn.gConnection();
+            String query = "SELECT MALOP FROM TAIKHOAN WHERE TAIKHOAN = '"+TAIKHOAN+"'";
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery(query);
+            
+            while(rs.next()) {
+                cblop.addItem(rs.getString("MALOP"));
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (Exception e) {
+        }
+    }
+    
     public void load_db() {
          String MALOP = cblop.getSelectedItem().toString();
         
         try {
             conn = cn.gConnection();
-             DefaultTableModel model = new DefaultTableModel(new String[]{"ẢNH", "TÊN", "NGÀY SINH", "QUÊ QUÁN", "TRƯỜNG", "LỚP", "MAHS"}, 0) {
+             DefaultTableModel model = new DefaultTableModel(new String[]{"HỌ TÊN", "TRƯỜNG", "NGÀY SINH", "QUÊ", "MÃ LỚP"}, 0) {
                 @Override
                     public boolean isCellEditable(int row, int column) {
                         // Tất cả các ô sẽ không thể chỉnh sửa
                         return false;
                     }
                     };
-            String query = "SELECT * FROM THANHVIEN WHERE MALOP = '"+MALOP+"'";
+            String query = "SELECT * FROM TAIKHOAN WHERE MALOP = '"+MALOP+"'";
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(query);
             
-            while(rs.next()) {
-                String ANH = rs.getString("ANH");
-                IMGPATH = ANH;
-                String TEN = rs.getString("TEN");
-                String NGAYSINH = rs.getString("NGAYSINH");
-                String QUEQUAN = rs.getString("QUEQUAN");
+            while(rs.next()) {               
+                String HOTEN = rs.getString("HOTEN");
                 String TRUONG = rs.getString("TRUONG");
+                String NGAYSINH = rs.getString("NGAYSINH");
+                String QUEQUAN = rs.getString("TINH");            
                 String MALOP1 = rs.getString("MALOP");  
-                String MAHS = rs.getString("MAHS");
-                
-                ImageIcon imageIcon = new ImageIcon(ANH);
-                Image image = imageIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-                ImageIcon resizedIcon = new ImageIcon(image);
-                model.addRow(new Object[] {resizedIcon, TEN, NGAYSINH, QUEQUAN, TRUONG, MALOP1, MAHS});
+                               
+                model.addRow(new Object[] {HOTEN, TRUONG, NGAYSINH, QUEQUAN, MALOP1});
             }
             table.setRowHeight(35);
-            table.setModel(model);
-            
-             // Gán ImageRenderer cho cột "ẢNH HÀNG"
-            table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
+            table.setModel(model);                 
             
         } catch (Exception e) {
             e.printStackTrace();
