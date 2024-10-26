@@ -108,9 +108,10 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="r4" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Component id="jLabel6" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="tftraloi4" alignment="0" min="-2" pref="539" max="-2" attributes="0"/>
+                                          <Component id="tftraloi4" alignment="0" pref="539" max="32767" attributes="0"/>
+                                          <Component id="btnimportfile" alignment="0" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -219,7 +220,10 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="32767" attributes="0"/>
-                      <Component id="cblop" min="-2" pref="36" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="cblop" alignment="3" min="-2" pref="36" max="-2" attributes="0"/>
+                          <Component id="btnimportfile" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -425,6 +429,17 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="M&#xe3; l&#x1edb;p"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnimportfile">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Helvetica Neue" size="16" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Nh&#x1ead;p c&#xe2;u h&#x1ecf;i t&#x1eeb; file Excel"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnimportfileActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

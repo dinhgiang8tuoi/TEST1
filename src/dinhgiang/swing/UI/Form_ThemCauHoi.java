@@ -10,6 +10,17 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import javax.swing.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 /**
  *
  * @author dinhgiang1
@@ -136,6 +147,7 @@ public class Form_ThemCauHoi extends javax.swing.JFrame {
         btnhuy = new javax.swing.JButton();
         cblop = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
+        btnimportfile = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -217,6 +229,14 @@ public class Form_ThemCauHoi extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Helvetica Neue", 0, 17)); // NOI18N
         jLabel7.setText("Mã lớp");
 
+        btnimportfile.setFont(new java.awt.Font("Helvetica Neue", 0, 16)); // NOI18N
+        btnimportfile.setText("Nhập câu hỏi từ file Excel");
+        btnimportfile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimportfileActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -257,9 +277,10 @@ public class Form_ThemCauHoi extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                                 .addComponent(r4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jLabel6)
-                                    .addComponent(tftraloi4, javax.swing.GroupLayout.PREFERRED_SIZE, 539, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(tftraloi4, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
+                                    .addComponent(btnimportfile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                                 .addComponent(r2)
@@ -338,7 +359,9 @@ public class Form_ThemCauHoi extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(cblop, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cblop, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnimportfile, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(54, 54, 54))
         );
 
@@ -472,6 +495,112 @@ public class Form_ThemCauHoi extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnhuyActionPerformed
 
+    private void btnimportfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimportfileActionPerformed
+        // TODO add your handling code here:
+        JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Chọn file Excel");
+    int userSelection = fileChooser.showOpenDialog(this);
+    
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
+        File fileToImport = fileChooser.getSelectedFile();
+        try {
+            // Đọc file Excel
+            FileInputStream fis = new FileInputStream(fileToImport);
+            Workbook workbook = new XSSFWorkbook(fis);
+            Sheet sheet = workbook.getSheetAt(0); // Đọc sheet đầu tiên
+
+            // Lấy MABT từ ComboBox và xử lý MABT chung cho tất cả các dòng
+            String maBT = cbmabt.getSelectedItem().toString();
+
+            // Mở kết nối tới cơ sở dữ liệu
+            Connection conn = cn.gConnection();
+
+            // Chuẩn bị câu truy vấn để chèn dữ liệu vào bảng CAUHOI
+            String query = "INSERT INTO CAUHOI (QTEXT, MABT, A1, A2, A3, A4, IS_CORRECT, MALOP) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+
+            // Duyệt qua từng dòng của file Excel
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                Row row = sheet.getRow(i);
+
+                // Lấy dữ liệu từ từng cột trong dòng
+                String cauHoi = getCellValueAsString(row.getCell(0));  // Câu hỏi
+                String maLop = getCellValueAsString(row.getCell(1));  // Mã lớp
+                String traLoi1 = getCellValueAsString(row.getCell(2)); // Đáp án 1
+                String traLoi2 = getCellValueAsString(row.getCell(3)); // Đáp án 2
+                String traLoi3 = getCellValueAsString(row.getCell(4)); // Đáp án 3
+                String traLoi4 = getCellValueAsString(row.getCell(5)); // Đáp án 4
+                int isCorrect = (int) getCellValueAsNumeric(row.getCell(6)); // Đáp án đúng
+
+                // Gán các giá trị này vào PreparedStatement
+                pstmt.setString(1, cauHoi);
+                pstmt.setString(2, maBT);    // MABT lấy từ ComboBox
+                pstmt.setString(3, traLoi1);
+                pstmt.setString(4, traLoi2);
+                pstmt.setString(5, traLoi3);
+                pstmt.setString(6, traLoi4);
+                pstmt.setInt(7, isCorrect);
+                pstmt.setString(8, maLop);   // MALOP lấy từ Excel
+
+                // Thực thi câu lệnh INSERT
+                pstmt.executeUpdate();
+            }
+
+            // Đóng tài nguyên
+            pstmt.close();
+            conn.close();
+            fis.close();
+            workbook.close();
+
+            JOptionPane.showMessageDialog(this, "Nhập dữ liệu từ file Excel và chèn vào database thành công!");
+
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi đọc file Excel hoặc chèn dữ liệu vào database!");
+        }
+    }
+    }//GEN-LAST:event_btnimportfileActionPerformed
+
+    // Hàm lấy giá trị từ ô Excel dưới dạng chuỗi
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString(); // Nếu là kiểu ngày tháng
+                } else {
+                    return String.valueOf((int) cell.getNumericCellValue()); // Nếu là số
+                }
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            default:
+                return "";
+        }
+    }
+    
+    // Hàm lấy giá trị từ ô Excel dưới dạng số
+    private double getCellValueAsNumeric(Cell cell) {
+        if (cell == null) {
+            return 0;
+        }
+        if (cell.getCellType() == CellType.NUMERIC) {
+            return cell.getNumericCellValue();
+        } else if (cell.getCellType() == CellType.STRING) {
+            try {
+                return Double.parseDouble(cell.getStringCellValue());
+            } catch (NumberFormatException e) {
+                return 0; // Nếu chuỗi không thể chuyển đổi thành số
+            }
+        }
+        return 0;
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -510,6 +639,7 @@ public class Form_ThemCauHoi extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnclear;
     private javax.swing.JButton btnhuy;
+    private javax.swing.JButton btnimportfile;
     private javax.swing.JButton btnluu;
     private javax.swing.JButton btnthem;
     private javax.swing.ButtonGroup buttonGroup1;

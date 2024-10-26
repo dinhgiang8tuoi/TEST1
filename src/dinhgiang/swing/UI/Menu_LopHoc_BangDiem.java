@@ -21,6 +21,12 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.File;
+import java.io.FileOutputStream;
+import javax.swing.JTable;
+
 /**
  *
  * @author dinhgiang1
@@ -134,6 +140,7 @@ public class Menu_LopHoc_BangDiem extends javax.swing.JInternalFrame {
         btnsua = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         cblop = new javax.swing.JComboBox<>();
+        btnxuatexcel = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(255, 255, 255));
@@ -151,7 +158,7 @@ public class Menu_LopHoc_BangDiem extends javax.swing.JInternalFrame {
         });
 
         cbsapxep.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
-        cbsapxep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sắp Xếp", "Điểm tăng dần", "Điểm giảm dần" }));
+        cbsapxep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sắp xếp", "Điểm tăng dần", "Điểm giảm dần" }));
         cbsapxep.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbsapxepItemStateChanged(evt);
@@ -215,6 +222,14 @@ public class Menu_LopHoc_BangDiem extends javax.swing.JInternalFrame {
             }
         });
 
+        btnxuatexcel.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
+        btnxuatexcel.setText("Xuất Excel");
+        btnxuatexcel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnxuatexcelActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -234,12 +249,13 @@ public class Menu_LopHoc_BangDiem extends javax.swing.JInternalFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jButton4)))
                         .addGap(35, 35, 35)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(cbsapxep, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(26, 26, 26)
-                                .addComponent(btnthemhs, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(cbsapxep, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnxuatexcel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(26, 26, 26)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnthemhs, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(btnsua)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnxoa)))))
@@ -260,7 +276,8 @@ public class Menu_LopHoc_BangDiem extends javax.swing.JInternalFrame {
                     .addComponent(jButton4)
                     .addComponent(btnxoa)
                     .addComponent(btnsua)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(btnxuatexcel))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -481,59 +498,121 @@ public class Menu_LopHoc_BangDiem extends javax.swing.JInternalFrame {
 
     private void tfsearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfsearchKeyReleased
         // TODO add your handling code here:
-        String searchKey = tfsearch.getText().trim();
-        String MALOP2 = cblop.getSelectedItem().toString();
-        if (searchKey.isEmpty()){
-            load_db();
-            return;
+    String searchKey = tfsearch.getText().trim();
+    String MALOP2 = cblop.getSelectedItem().toString();  // Lấy mã lớp từ ComboBox
+    
+    if (searchKey.isEmpty()) {
+        load_db();  // Nếu không có từ khóa tìm kiếm, tải lại dữ liệu mặc định
+        return;
+    }
+    
+    try {
+        conn = cn.gConnection();
+        DefaultTableModel model = new DefaultTableModel(new String[]{"TÊN", "NGÀY SINH", "QUÊ QUÁN", "MÃ LỚP", "BẢNG ĐIỂM", "MÃ BÀI TẬP"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;  // Không cho phép chỉnh sửa ô
+            }
+        };
+        
+        // Kiểm tra nếu searchKey là số (để tìm kiếm theo điểm)
+        String query;
+        if (searchKey.matches("\\d+(\\.\\d+)?")) {  // Nếu searchKey là số (cả số nguyên và số thập phân)
+            query = "SELECT TAIKHOAN.HOTEN AS TÊN, TAIKHOAN.NGAYSINH, TAIKHOAN.TINH AS QUEQUAN, BANGDIEM.MALOP, BANGDIEM.BANGDIEM, BANGDIEM.MABT " +
+                    "FROM BANGDIEM " +
+                    "JOIN TAIKHOAN ON BANGDIEM.TAIKHOAN = TAIKHOAN.TAIKHOAN " +
+                    "WHERE BANGDIEM.BANGDIEM = " + searchKey + " AND BANGDIEM.MALOP = '"+MALOP2+"'";
+        } else {
+            // Nếu searchKey là chuỗi ký tự
+            query = "SELECT TAIKHOAN.HOTEN AS TÊN, TAIKHOAN.NGAYSINH, TAIKHOAN.TINH AS QUEQUAN, BANGDIEM.MALOP, BANGDIEM.BANGDIEM, BANGDIEM.MABT " +
+                    "FROM BANGDIEM " +
+                    "JOIN TAIKHOAN ON BANGDIEM.TAIKHOAN = TAIKHOAN.TAIKHOAN " +
+                    "WHERE (BANGDIEM.MABT LIKE '%" + searchKey + "%' OR TAIKHOAN.HOTEN LIKE '%" + searchKey + "%' OR TAIKHOAN.TINH LIKE '%" + searchKey + "%') " +
+                    "AND BANGDIEM.MALOP = '" + MALOP2 + "'";
         }
         
-        try {
-            conn = cn.gConnection();
-            DefaultTableModel model = new DefaultTableModel(new String[]{"TÊN", "NGÀY SINH", "QUÊ QUÁN", "MÃ LỚP", "BẢNG ĐIỂM", "MÃ BÀI TẬP"}, 0) {
-                @Override
-                    public boolean isCellEditable(int row, int column) {
-                        // Tất cả các ô sẽ không thể chỉnh sửa
-                        return false;
-                    }
-                    };
-            String query = "SELECT TAIKHOAN, MABT, MALOP, BANGDIEM FROM BANGDIEM WHERE (TAIKHOAN LIKE '%"+searchKey+"%' OR MABT LIKE '%"+searchKey+"%' OR MALOP LIKE '%"+searchKey+"%' OR BANGDIEM LIKE '%"+searchKey+"%') AND MALOP = '"+MALOP2+"'";
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery(query);
+        Statement stm = conn.createStatement();
+        ResultSet rs = stm.executeQuery(query);
+        
+        // Duyệt qua kết quả trả về
+        while (rs.next()) {
+            String TEN = rs.getString("TÊN");            
+            String NGAYSINH = rs.getString("NGAYSINH");
+            String QUEQUAN = rs.getString("QUEQUAN");
+            String MALOP1 = rs.getString("MALOP");
+            double BANGDIEM = rs.getDouble("BANGDIEM");
+            String MABT = rs.getString("MABT");
             
-            while (rs.next()) {
-                String TAIKHOAN = rs.getString("TAIKHOAN");                 
-                double BANGDIEM = Double.parseDouble(rs.getString("BANGDIEM"));
-                String MABT = rs.getString("MABT"); 
-                
-                // Truy vấn bảng TAIKHOAN để lấy thông tin cá nhân của từng tài khoản từ BANGDIEM
-                String query2 = "SELECT * FROM TAIKHOAN WHERE TAIKHOAN = '"+TAIKHOAN+"' AND MALOP = '"+MALOP2+"'";
-                Statement stm2 = conn.createStatement();  // Tạo một Statement khác để thực hiện query thứ hai
-                ResultSet rs2 = stm2.executeQuery(query2);
-                
-            while(rs2.next()) {
-                String TEN = rs2.getString("HOTEN");
-                String NGAYSINH = rs2.getString("NGAYSINH");
-                String QUEQUAN = rs2.getString("TINH");
+            // Thêm dữ liệu vào mô hình bảng
+            model.addRow(new Object[] {TEN, NGAYSINH, QUEQUAN, MALOP1, BANGDIEM, MABT});
+        }
+        
+        // Cập nhật giao diện bảng
+        table.setRowHeight(35);  // Khoảng cách giữa các hàng
+        table.setModel(model);
+        table.setRowMargin(10);  // Khoảng cách giữa các hàng
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    }//GEN-LAST:event_tfsearchKeyReleased
 
-                // Thêm dữ liệu vào bảng
-                model.addRow(new Object[] {TEN, NGAYSINH, QUEQUAN, MALOP2, BANGDIEM, MABT});
+    private void btnxuatexcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnxuatexcelActionPerformed
+        // TODO add your handling code here:
+        // Tạo Workbook mới
+        String malop = cblop.getSelectedItem().toString();
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("BANGDIEM" + malop);
+
+        // Lấy model của bảng
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+        // Tạo hàng đầu tiên (header)
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < model.getColumnCount(); i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(model.getColumnName(i));
+        }
+
+        // Thêm dữ liệu từ bảng vào Excel
+        for (int i = 0; i < model.getRowCount(); i++) {
+            Row row = sheet.createRow(i + 1); // Bắt đầu từ hàng 1, vì hàng 0 đã dành cho header
+            for (int j = 0; j < model.getColumnCount(); j++) {
+                Cell cell = row.createCell(j);
+                Object value = model.getValueAt(i, j);
+                if (value instanceof String) {
+                    cell.setCellValue((String) value);
+                } else if (value instanceof Integer) {
+                    cell.setCellValue((Integer) value);
+                } else if (value instanceof Double) {
+                    cell.setCellValue((Double) value);
                 }
             }
-            table.setRowHeight(35);
-            table.setModel(model);
-            table.setRowMargin(10);                 
-            
+        }
+    
+        // Đặt đường dẫn cố định
+        String filePath = "/Users/dinhgiang1/Downloads/BANGDIEM.xlsx";  // Đường dẫn cố định
+
+        // Chọn nơi lưu file Excel
+        try {
+            FileOutputStream fileOut = new FileOutputStream(filePath);
+            workbook.write(fileOut);
+            fileOut.close();
+            workbook.close();
+            JOptionPane.showMessageDialog(this, "Xuất file Excel thành công!");
         } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Xuất file Excel thất bại!");
         }
-    }//GEN-LAST:event_tfsearchKeyReleased
+   
+    }//GEN-LAST:event_btnxuatexcelActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnsua;
     private javax.swing.JButton btnthemhs;
     private javax.swing.JButton btnxoa;
+    private javax.swing.JButton btnxuatexcel;
     private javax.swing.JComboBox<String> cblop;
     private javax.swing.JComboBox<String> cbsapxep;
     private javax.swing.JButton jButton4;
