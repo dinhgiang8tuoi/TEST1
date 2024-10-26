@@ -189,6 +189,11 @@ public class Menu_HocSinh_BaiTap extends javax.swing.JInternalFrame {
         tfsearch.setToolTipText("");
         tfsearch.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(153, 153, 153), 1, true));
         tfsearch.setFocusTraversalKeysEnabled(false);
+        tfsearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tfsearchKeyReleased(evt);
+            }
+        });
 
         jComboBox1.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sắp Xếp", "Tăng dần", "Giảm dần" }));
@@ -381,7 +386,7 @@ public class Menu_HocSinh_BaiTap extends javax.swing.JInternalFrame {
 
     private void btnlambaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnlambaiActionPerformed
         // TODO add your handling code here:
-        Multiple_Choices lamthu = new Multiple_Choices(HOTEN, MABT1, MALOP);
+        Multiple_Choices lamthu = new Multiple_Choices(TAIKHOAN, MABT1, MALOP);
         lamthu.setVisible(true);
     }//GEN-LAST:event_btnlambaiActionPerformed
 
@@ -573,6 +578,11 @@ public class Menu_HocSinh_BaiTap extends javax.swing.JInternalFrame {
             MABT1 = table.getValueAt(selectedRow, 1).toString();
         }        
     }//GEN-LAST:event_tableMouseClicked
+
+    private void tfsearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfsearchKeyReleased
+        // TODO add your handling code here:
+        System.out.println("KKKKK");
+    }//GEN-LAST:event_tfsearchKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

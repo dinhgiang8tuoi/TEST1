@@ -254,6 +254,9 @@ public class TrangChu extends javax.swing.JFrame {
         btntaikhoan.setText("Tài Khoản");
         btntaikhoan.setFocusable(false);
         btntaikhoan.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btntaikhoanMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 btntaikhoanMousePressed(evt);
             }
@@ -445,19 +448,16 @@ public class TrangChu extends javax.swing.JFrame {
                 btnbaitap.setEnabled(true);
                 btnbangdiem.setEnabled(true);
             }
-            if (FLAG == 0) {
-                btnthanhvien.setEnabled(true);
-                btnbaitap.setEnabled(true);
-                btnbangdiem.setEnabled(true);
-            }
         } else {
             Menu_HocSinh hocsinh = new Menu_HocSinh(MALOP);
             jDesktopPane1.removeAll();
             jDesktopPane1.add(hocsinh).setVisible(true);         
             btnbaitap.setText("Bài Tập");
             btnbangdiem.setText("Bảng Điểm");
+            btnthanhvien.setText("Thành Viên");
             btnbaitap.setEnabled(true);
             btnbangdiem.setEnabled(true);
+            btnthanhvien.setEnabled(true);
         }               
     }//GEN-LAST:event_btnlophocMouseClicked
 
@@ -495,9 +495,16 @@ public class TrangChu extends javax.swing.JFrame {
 
     private void btnthanhvienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnthanhvienMouseClicked
         // TODO add your handling code here:
-        Menu_LopHoc_ThanhVien THANHVIEN = new Menu_LopHoc_ThanhVien();
-        jDesktopPane1.removeAll();
-        jDesktopPane1.add(THANHVIEN).setVisible(true);
+        if (sROLE.equals("Tôi là giáo viên")) {
+            Menu_LopHoc_ThanhVien THANHVIEN = new Menu_LopHoc_ThanhVien("GV", TAIKHOAN);
+            jDesktopPane1.removeAll();
+            jDesktopPane1.add(THANHVIEN).setVisible(true);
+        } else {
+            Menu_LopHoc_ThanhVien THANHVIEN = new Menu_LopHoc_ThanhVien("HS", TAIKHOAN);
+            jDesktopPane1.removeAll();
+            jDesktopPane1.add(THANHVIEN).setVisible(true);
+        }
+        
     }//GEN-LAST:event_btnthanhvienMouseClicked
 
     private void btnbaitapMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnbaitapMouseClicked
@@ -516,10 +523,24 @@ public class TrangChu extends javax.swing.JFrame {
 
     private void btnbangdiemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnbangdiemMouseClicked
         // TODO add your handling code here:
-        Menu_LopHoc_BangDiem BANGDIEM = new Menu_LopHoc_BangDiem();
-        jDesktopPane1.removeAll();
-        jDesktopPane1.add(BANGDIEM).setVisible(true);
+        if (sROLE.equals("Tôi là giáo viên")) {
+            Menu_LopHoc_BangDiem BANGDIEM = new Menu_LopHoc_BangDiem();
+            jDesktopPane1.removeAll();
+            jDesktopPane1.add(BANGDIEM).setVisible(true);
+        } else {
+            Menu_HocSinh_BangDiem menu_HocSinh_BangDiem = new Menu_HocSinh_BangDiem(TAIKHOAN);
+            jDesktopPane1.removeAll();
+            jDesktopPane1.add(menu_HocSinh_BangDiem).setVisible(true);
+        }
+        
     }//GEN-LAST:event_btnbangdiemMouseClicked
+
+    private void btntaikhoanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btntaikhoanMouseClicked
+        // TODO add your handling code here:
+        Menu_TaiKhoan menu_TaiKhoan = new Menu_TaiKhoan(TAIKHOAN);
+        jDesktopPane1.removeAll();
+        jDesktopPane1.add(menu_TaiKhoan).setVisible(true);
+    }//GEN-LAST:event_btntaikhoanMouseClicked
 
     
     public static void main(String args[]) {

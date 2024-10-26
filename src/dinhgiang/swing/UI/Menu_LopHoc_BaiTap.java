@@ -95,6 +95,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
             }
             table.setRowHeight(35);
             table.setModel(model);
+            table.setRowMargin(10);
             
              // Gán ImageRenderer cho cột "ẢNH HÀNG"
             table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
@@ -138,6 +139,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
             }
             table.setRowHeight(35);
             table.setModel(model);
+            table.setRowMargin(10);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,7 +156,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
 
         jPanel1 = new javax.swing.JPanel();
         tfsearch = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbsapxep = new javax.swing.JComboBox<>();
         btntaobt = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
@@ -176,9 +178,19 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
         tfsearch.setToolTipText("");
         tfsearch.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(153, 153, 153), 1, true));
         tfsearch.setFocusTraversalKeysEnabled(false);
+        tfsearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tfsearchKeyReleased(evt);
+            }
+        });
 
-        jComboBox1.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sắp Xếp", "Tăng dần", "Giảm dần" }));
+        cbsapxep.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
+        cbsapxep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sắp Xếp", "Tăng dần theo tên", "Giảm dần theo tên" }));
+        cbsapxep.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbsapxepItemStateChanged(evt);
+            }
+        });
 
         btntaobt.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
         btntaobt.setText("Tạo bài tập");
@@ -295,7 +307,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
                         .addGap(35, 35, 35)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnlamthu)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbsapxep, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(26, 26, 26)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btntaobt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -311,7 +323,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
                 .addContainerGap(48, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfsearch, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbsapxep, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btntaobt, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cblop, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -570,6 +582,111 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
         
     }//GEN-LAST:event_tableMouseClicked
 
+    private void tfsearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfsearchKeyReleased
+        // TODO add your handling code here:
+        String searchKey = tfsearch.getText().trim();
+        String MALOP2 = cblop.getSelectedItem().toString();
+        if (searchKey.isEmpty()){
+            load_db();
+            return;
+        }
+        
+        try {
+            conn = cn.gConnection();
+            DefaultTableModel model = new DefaultTableModel(new String[]{"ẢNH", "Mã bài tập", "Tên bài tập", "Số câu", "Số điểm", "Mã lớp"}, 0) {
+                @Override
+                    public boolean isCellEditable(int row, int column) {
+                        // Tất cả các ô sẽ không thể chỉnh sửa
+                        return false;
+                    }
+                    };
+              String query = "SELECT ANH, MABT, TENBT, SODIEM, MALOP FROM BAITAP WHERE (MABT LIKE '%"+searchKey+"%' OR TENBT LIKE '%"+searchKey+"%' OR SODIEM LIKE '%"+searchKey+"%' OR MALOP LIKE '%"+searchKey+"%') AND MALOP = '"+MALOP2+"'";
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery(query);
+            
+            while (rs.next()) {
+                String ANH1 = rs.getString("ANH");            
+                String MABT = rs.getString("MABT");
+                String TENBT = rs.getString("TENBT");
+                String SOCAU = "";
+                String MALOP1 = rs.getString("MALOP");
+                double SODIEM = Double.parseDouble(rs.getString("SODIEM"));
+                ImageIcon imageIcon = new ImageIcon(ANH1);
+                Image image = imageIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                ImageIcon resizedIcon = new ImageIcon(image);
+                model.addRow(new Object[] {resizedIcon, MABT, TENBT, SOCAU, SODIEM, MALOP1});
+            }
+            table.setRowHeight(35);
+            table.setModel(model);
+            table.setRowMargin(10);
+            
+             // Gán ImageRenderer cho cột "ẢNH HÀNG"
+            table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_tfsearchKeyReleased
+
+    private void sortData(String order) {
+    String MALOP = cblop.getSelectedItem().toString();
+        System.out.println("KDKFKK");
+    
+    try {
+        conn = cn.gConnection();
+        DefaultTableModel model = new DefaultTableModel(new String[]{"ẢNH", "Mã bài tập", "Tên bài tập", "Số câu", "Số điểm", "Mã lớp"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        // Câu truy vấn sắp xếp theo thứ tự order (ASC hoặc DESC)
+        String query = "SELECT * FROM BAITAP WHERE MALOP = '" + MALOP + "' ORDER BY TENBT " + order;
+
+        Statement stm = conn.createStatement();
+        ResultSet rs = stm.executeQuery(query);
+
+        while (rs.next()) {
+            String ANH3 = rs.getString("ANH");       
+            String MABT = rs.getString("MABT");
+            String TENBT = rs.getString("TENBT");
+            String MALOP5 = rs.getString("MALOP");
+            double SODIEM = Double.parseDouble(rs.getString("SODIEM"));
+            
+            ImageIcon imageIcon = new ImageIcon(ANH3);
+            Image image = imageIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+            ImageIcon resizedIcon = new ImageIcon(image);
+
+            model.addRow(new Object[] {resizedIcon, MABT, TENBT, "", SODIEM, MALOP5});
+        }
+
+        table.setRowHeight(35);
+        table.setModel(model);
+        table.setRowMargin(10);
+        table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+    private void cbsapxepItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbsapxepItemStateChanged
+        // TODO add your handling code here:
+        String selectedItem = cbsapxep.getSelectedItem().toString();
+        
+        if (selectedItem.equals("Tăng dần theo tên")) {
+            // Sắp xếp tăng dần theo tên
+            sortData("ASC");
+        } else if (selectedItem.equals("Giảm dần theo tên")) {
+            // Sắp xếp giảm dần theo tên
+            sortData("DESC");
+        } else if (selectedItem.equals("Sắp xếp")) {
+            // Hiển thị lại dữ liệu gốc
+            load_db();
+        }    
+    }//GEN-LAST:event_cbsapxepItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnback;
@@ -580,7 +697,7 @@ public class Menu_LopHoc_BaiTap extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnxem;
     private javax.swing.JButton btnxoa;
     private javax.swing.JComboBox<String> cblop;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> cbsapxep;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
